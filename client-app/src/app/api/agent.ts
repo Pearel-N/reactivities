@@ -13,6 +13,7 @@ axios.interceptors.response.use(undefined, error => {
   const { status, data, config } = error.response;
   if (status === 404) {
     history.push("/notfound");
+    toast.error("something went wrong");
   }
   if (
     status === 400 &&
@@ -20,6 +21,7 @@ axios.interceptors.response.use(undefined, error => {
     data.errors.hasOwnProperty("id")
   ) {
     history.push("/notfound");
+    toast.error("something went wrong");
   }
   if (status === 500) {
     toast.error("Server error - check the terminal for more info");
