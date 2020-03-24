@@ -1,3 +1,4 @@
+using System;
 using Application.Interfaces;
 using Application.Photos;
 using CloudinaryDotNet;
@@ -36,6 +37,10 @@ namespace Infrastructure.Photos
                     uploadResult = _cloudinary.Upload(uploadParams);
                 }
             }
+
+            if (uploadResult.Error != null)
+                throw new Exception(uploadResult.Error.Message);
+
             return new PhotoUploadResult
             {
                 PublicId = uploadResult.PublicId,
