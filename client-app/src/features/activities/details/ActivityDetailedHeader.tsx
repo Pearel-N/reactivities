@@ -3,7 +3,7 @@ import { Segment, Item, Header, Button, Image } from "semantic-ui-react";
 import { IActivity } from "../../../app/models/activity";
 import { observer } from "mobx-react-lite";
 import { Link } from "react-router-dom";
-import { format } from "date-fns/fp";
+import { format } from "date-fns";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 
 const activityImageStyle = {

@@ -39,7 +39,9 @@ export default class ActivityStore {
       .then(() => console.log(this.hubConnection!.state))
       .then(() => {
         console.log("attempting to join group");
-        this.hubConnection!.invoke("AddToGroup", activityId);
+        this.hubConnection!.invoke("AddToGroup", activityId)
+          .then(() => console.log("joined the group"))
+          .catch(err => console.log("problem joining the group"));
       })
       .catch(error =>
         console.log("Error establishing signelR connection", error)
@@ -49,10 +51,6 @@ export default class ActivityStore {
       runInAction(() => {
         this.activity!.comments.push(comment);
       });
-    });
-
-    this.hubConnection.on("Send", message => {
-      toast.info(message);
     });
   };
 
