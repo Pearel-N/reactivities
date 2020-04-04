@@ -8,7 +8,12 @@ import { IProfile } from "../../app/models/profile";
 const AboutProfile = () => {
   const [editMode, setEditMode] = useState(false);
   const rootStore = useContext(RootStoreContext);
-  const { updateProfile, profile, isCurrentUser } = rootStore.profileStore;
+  const {
+    updateProfile,
+    profile,
+    isCurrentUser,
+    loadingBio,
+  } = rootStore.profileStore;
 
   const hadleEditProfile = (values: IProfile) => {
     updateProfile(values);
@@ -16,7 +21,7 @@ const AboutProfile = () => {
   };
 
   return (
-    <Tab.Pane>
+    <Tab.Pane loading={loadingBio}>
       <Grid>
         <Grid.Column width={16} style={{ paddingBottom: 0 }}>
           <Header

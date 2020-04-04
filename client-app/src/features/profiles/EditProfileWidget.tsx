@@ -20,6 +20,7 @@ const EditProfileWidget: React.FC<IProps> = ({ updateProfile, profile }) => {
   return (
     <FinalForm
       onSubmit={updateProfile}
+      initialValues={profile}
       validate={validate}
       render={({ handleSubmit, invalid, pristine, submitting }) => (
         <Form onSubmit={handleSubmit} error>

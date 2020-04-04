@@ -1,4 +1,4 @@
-import { observable, action, computed, runInAction } from "mobx";
+import { observable, action, computed, runInAction, reaction } from "mobx";
 import { SyntheticEvent } from "react";
 import { IActivity } from "../models/activity";
 import agent from "../api/agent";
@@ -9,13 +9,24 @@ import { setActivityProps, createAttendee } from "../common/util/util";
 import {
   HubConnection,
   HubConnectionBuilder,
-  LogLevel
+  LogLevel,
 } from "@microsoft/signalr";
+
+const LIMIT = 2;
 
 export default class ActivityStore {
   rootStore: RootStore;
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
+
+    reaction(
+      () => this.predicate.keys(),
+      () => {
+        this.page = 0;
+        this.activityRegistry.clear();
+        this.loadActivities();
+      }
+    );
   }
 
   @observable activityRegistry = new Map();
@@ -25,11 +36,41 @@ export default class ActivityStore {
   @observable target = "";
   @observable loading = false;
   @observable.ref hubConnection: HubConnection | null = null;
+  @observable activityCount = 0;
+  @observable page = 0;
+  @observable predicate = new Map();
+
+  @action setPredicate = (predicate: string, value: string | Date) => {
+    this.predicate.clear();
+    if (predicate !== "all") this.predicate.set(predicate, value);
+  };
+
+  @computed get axiosParams() {
+    const params = new URLSearchParams();
+    params.append("limit", String(LIMIT));
+    params.append("offset", `${this.page ? this.page * LIMIT : 0}`);
+    this.predicate.forEach((value, key) => {
+      if (key === "startDate") {
+        params.append(key, value.toISOString());
+      } else {
+        params.append(key, value);
+      }
+    });
+    return params;
+  }
+
+  @computed get totalPages() {
+    return Math.ceil(this.activityCount / LIMIT);
+  }
+
+  @action setPage = (page: number) => {
+    this.page = page;
+  };
 
   @action createHubConnection = (activityId: string) => {
     this.hubConnection = new HubConnectionBuilder()
       .withUrl("http://localhost:5000/chat", {
-        accessTokenFactory: () => this.rootStore.commonStore.token!
+        accessTokenFactory: () => this.rootStore.commonStore.token!,
       })
       .configureLogging(LogLevel.Information)
       .build();
@@ -41,13 +82,13 @@ export default class ActivityStore {
         console.log("attempting to join group");
         this.hubConnection!.invoke("AddToGroup", activityId)
           .then(() => console.log("joined the group"))
-          .catch(err => console.log("problem joining the group"));
+          .catch((err) => console.log("problem joining the group"));
       })
-      .catch(error =>
+      .catch((error) =>
         console.log("Error establishing signelR connection", error)
       );
 
-    this.hubConnection.on("ReceiveComment", comment => {
+    this.hubConnection.on("ReceiveComment", (comment) => {
       runInAction(() => {
         this.activity!.comments.push(comment);
       });
@@ -60,7 +101,7 @@ export default class ActivityStore {
         this.hubConnection!.stop();
       })
       .then(() => console.log("Connection stopped"))
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -95,19 +136,21 @@ export default class ActivityStore {
     );
   }
 
-  @action loadActivities = () => {
+  @action loadActivities = async () => {
     this.loadingInitial = true;
-    agent.Activities.list()
-      .then(activities => {
+    await agent.Activities.list(this.axiosParams)
+      .then((activitiesEnveope) => {
+        const { activities, activityCount } = activitiesEnveope;
         runInAction("loading activities", () => {
-          activities.forEach(activity => {
+          activities.forEach((activity) => {
             setActivityProps(activity, this.rootStore.userStore.user!);
             this.activityRegistry.set(activity.id, activity);
+            this.activityCount = activityCount;
             this.loadingInitial = false;
           });
         });
       })
-      .catch(error => {
+      .catch((error) => {
         runInAction("loading activities error", () => {
           this.loadingInitial = false;
         });
@@ -149,7 +192,7 @@ export default class ActivityStore {
   };
 
   @action createActivity = async (activity: IActivity) => {
-    agent.Activities.create(activity)
+    await agent.Activities.create(activity)
       .then(() => {
         const attendee = createAttendee(this.rootStore.userStore.user!);
         attendee.isHost = true;
@@ -164,7 +207,7 @@ export default class ActivityStore {
         });
         history.push(`/activities/${activity.id}`);
       })
-      .catch(error => {
+      .catch((error) => {
         runInAction("create activity error", () => {
           this.submitting = false;
         });
@@ -184,7 +227,7 @@ export default class ActivityStore {
         });
         history.push(`/activities/${activity.id}`);
       })
-      .catch(error => {
+      .catch((error) => {
         runInAction("edit activity error", () => {
           this.submitting = false;
         });
@@ -207,7 +250,7 @@ export default class ActivityStore {
           this.target = "";
         });
       })
-      .catch(err => {
+      .catch((err) => {
         runInAction("delete activity error", () => {
           this.submitting = false;
           this.target = "";
@@ -248,7 +291,7 @@ export default class ActivityStore {
       runInAction(() => {
         if (this.activity) {
           this.activity.attendees = this.activity.attendees.filter(
-            a => a.username !== this.rootStore.userStore.user!.userName
+            (a) => a.username !== this.rootStore.userStore.user!.userName
           );
           this.activity.isGoing = false;
           this.activityRegistry.set(this.activity.id, this.activity);
