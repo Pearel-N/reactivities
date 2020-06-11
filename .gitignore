@@ -2,7 +2,6 @@ bin
 obj
 .vscode
 .DS_Store
-appsettings.json
 *.db
 /node_modules
 /.pnp
@@ -24,3 +23,6 @@ appsettings.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+wwwroot/
+publish/

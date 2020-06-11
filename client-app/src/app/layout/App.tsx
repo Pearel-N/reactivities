@@ -7,7 +7,7 @@ import {
   Route,
   withRouter,
   RouteComponentProps,
-  Switch
+  Switch,
 } from "react-router-dom";
 import HomePage from "../../features/home/HomePage";
 import ActivityForm from "../../features/activities/form/ActivityForm";
@@ -18,6 +18,7 @@ import { RootStoreContext } from "../stores/rootStore";
 import { LoadingComponent } from "./LoadingComponent";
 import ModalContainer from "../common/modals/ModalContainer";
 import ProfilePage from "../../features/profiles/ProfilePage";
+import PrivateRoute from "./PrivateRoute";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
   const rootStore = useContext(RootStoreContext);
@@ -45,7 +46,11 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
             <NavBar />
             <Container style={{ marginTop: "7em" }}>
               <Switch>
-                <Route exact path="/activities" component={ActivityDashboard} />
+                <PrivateRoute
+                  exact
+                  path="/activities"
+                  component={ActivityDashboard}
+                />
                 <Route path="/activities/:id" component={ActivityDetails} />
                 <Route
                   key={location.key}

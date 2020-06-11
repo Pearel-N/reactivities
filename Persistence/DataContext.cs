@@ -21,6 +21,8 @@ namespace Persistence
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<AppUser>(entity => entity.Property(m => m.Id).HasMaxLength(255));
             
             builder.Entity<Value>().HasData(
                 new Value {Id =1, Name= "Value 101"},
