@@ -10,7 +10,7 @@ import ErrorMessage from "../../app/common/form/ErrorMessage";
 
 const validate = combineValidators({
   email: isRequired("email"),
-  password: isRequired("password")
+  password: isRequired("password"),
 });
 
 const LoginForm = () => {
@@ -19,8 +19,8 @@ const LoginForm = () => {
   return (
     <FinalForm
       onSubmit={(values: IUserFormValues) =>
-        login(values).catch(error => ({
-          [FORM_ERROR]: error
+        login(values).catch((error) => ({
+          [FORM_ERROR]: error,
         }))
       }
       validate={validate}
@@ -30,34 +30,37 @@ const LoginForm = () => {
         submitError,
         invalid,
         pristine,
-        dirtySinceLastSubmit
+        dirtySinceLastSubmit,
       }) => (
-          <Form onSubmit={handleSubmit} error>
-            <Header
-              as="h2"
-              content="Login to Reactivities"
-              color="teal"
-              textAlign="center"
+        <Form onSubmit={handleSubmit} error>
+          <Header
+            as="h2"
+            content="Login to SAM"
+            color="teal"
+            textAlign="center"
+          />
+          <Field name="email" component={TextInput} placeholder="Email" />
+          <Field
+            name="password"
+            component={TextInput}
+            placeholder="Password"
+            type="password"
+          />
+          {submitError && !dirtySinceLastSubmit && (
+            <ErrorMessage
+              error={submitError}
+              text="Invalid email or password"
             />
-            <Field name="email" component={TextInput} placeholder="Email" />
-            <Field
-              name="password"
-              component={TextInput}
-              placeholder="Password"
-              type="password"
-            />
-            {submitError && !dirtySinceLastSubmit && (
-              <ErrorMessage error={submitError} text='Invalid email or password' />
-            )}
-            <Button
-              disabled={(invalid && !dirtySinceLastSubmit) || pristine}
-              loading={submitting}
-              content="Login"
-              fluid
-              color="teal"
-            />
-          </Form>
-        )}
+          )}
+          <Button
+            disabled={(invalid && !dirtySinceLastSubmit) || pristine}
+            loading={submitting}
+            content="Login"
+            fluid
+            color="teal"
+          />
+        </Form>
+      )}
     />
   );
 };

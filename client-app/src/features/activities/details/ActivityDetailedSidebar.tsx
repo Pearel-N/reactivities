@@ -6,9 +6,10 @@ import { observer } from "mobx-react-lite";
 
 interface IProps {
   attendees: IAttendee[];
+  isHost: boolean;
 }
 
-const ActivityDetailedSidebar: React.FC<IProps> = ({ attendees }) => {
+const ActivityDetailedSidebar: React.FC<IProps> = ({ attendees, isHost }) => {
   return (
     <Fragment>
       <Segment
@@ -23,7 +24,7 @@ const ActivityDetailedSidebar: React.FC<IProps> = ({ attendees }) => {
       </Segment>
       <Segment attached>
         <List relaxed divided>
-          {attendees.map(attendee => (
+          {attendees.map((attendee) => (
             <Item key={attendee.username} style={{ position: "relative" }}>
               {attendee.isHost && (
                 <Label
@@ -38,7 +39,7 @@ const ActivityDetailedSidebar: React.FC<IProps> = ({ attendees }) => {
               <Item.Content verticalAlign="middle">
                 <Item.Header as="h3">
                   <Link to={`/profile/${attendee.username}`}>
-                    {attendee.displayName}
+                    {isHost ? "You" : attendee.displayName}
                   </Link>
                 </Item.Header>
                 {attendee.following && (

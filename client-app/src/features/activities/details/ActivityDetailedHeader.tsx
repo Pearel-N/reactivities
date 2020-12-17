@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 
 const activityImageStyle = {
-  filter: "brightness(30%)"
+  filter: "brightness(30%)",
 };
 
 const activityImageTextStyle = {
@@ -16,13 +16,13 @@ const activityImageTextStyle = {
   left: "5%",
   width: "100%",
   height: "auto",
-  color: "white"
+  color: "white",
 };
 
 const ActivityDetailedHeader: React.FC<{ activity: IActivity }> = ({
-  activity
+  activity,
 }) => {
-  const host = activity.attendees.filter(x => x.isHost)[0];
+  const host = activity.attendees.filter((x) => x.isHost)[0];
   const rootStore = useContext(RootStoreContext);
   const { attendActivity, cancelAttendance, loading } = rootStore.activityStore;
   return (
@@ -46,7 +46,9 @@ const ActivityDetailedHeader: React.FC<{ activity: IActivity }> = ({
                 <p>
                   Hosted by{" "}
                   <Link to={`/profile/${host.username}`}>
-                    <strong>{host.displayName}</strong>
+                    <strong>
+                      {activity.isHost ? "You" : host.displayName}
+                    </strong>
                   </Link>
                 </p>
               </Item.Content>

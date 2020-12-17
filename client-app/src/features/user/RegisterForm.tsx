@@ -9,61 +9,65 @@ import { combineValidators, isRequired } from "revalidate";
 import ErrorMessage from "../../app/common/form/ErrorMessage";
 
 const validate = combineValidators({
-    username: isRequired("userame"),
-    displayName: isRequired("displayname"),
-    email: isRequired("email"),
-    password: isRequired("password")
+  username: isRequired("userame"),
+  displayName: isRequired("displayname"),
+  email: isRequired("email"),
+  password: isRequired("password"),
 });
 
 const RegisterForm = () => {
-    const rootStore = useContext(RootStoreContext);
-    const { register } = rootStore.userStore;
-    return (
-        <FinalForm
-            onSubmit={(values: IUserFormValues) =>
-                register(values).catch(error => ({
-                    [FORM_ERROR]: error
-                }))
-            }
-            validate={validate}
-            render={({
-                handleSubmit,
-                submitting,
-                submitError,
-                invalid,
-                pristine,
-                dirtySinceLastSubmit
-            }) => (
-                    <Form onSubmit={handleSubmit} error>
-                        <Header
-                            as="h2"
-                            content="Sign up to Reactivities"
-                            color="teal"
-                            textAlign="center"
-                        />
-                        <Field name="username" component={TextInput} placeholder="Username" />
-                        <Field name="displayName" component={TextInput} placeholder="Displayl Name" />
-                        <Field name="email" component={TextInput} placeholder="Email" />
-                        <Field
-                            name="password"
-                            component={TextInput}
-                            placeholder="Password"
-                            type="password"
-                        />
-                        {submitError && !dirtySinceLastSubmit && (
-                            <ErrorMessage error={submitError} />
-                        )}
-                        <Button
-                            disabled={(invalid && !dirtySinceLastSubmit) || pristine}
-                            loading={submitting}
-                            content="Register"
-                            fluid
-                            color="teal"
-                        />
-                    </Form>
-                )}
-        />
-    );
+  const rootStore = useContext(RootStoreContext);
+  const { register } = rootStore.userStore;
+  return (
+    <FinalForm
+      onSubmit={(values: IUserFormValues) =>
+        register(values).catch((error) => ({
+          [FORM_ERROR]: error,
+        }))
+      }
+      validate={validate}
+      render={({
+        handleSubmit,
+        submitting,
+        submitError,
+        invalid,
+        pristine,
+        dirtySinceLastSubmit,
+      }) => (
+        <Form onSubmit={handleSubmit} error>
+          <Header
+            as="h2"
+            content="Sign up to SAM"
+            color="teal"
+            textAlign="center"
+          />
+          <Field name="username" component={TextInput} placeholder="Username" />
+          <Field
+            name="displayName"
+            component={TextInput}
+            placeholder="Displayl Name"
+          />
+          <Field name="email" component={TextInput} placeholder="Email" />
+          <Field
+            name="password"
+            component={TextInput}
+            placeholder="Password"
+            type="password"
+          />
+          {submitError && !dirtySinceLastSubmit && (
+            <ErrorMessage error={submitError} />
+          )}
+          <Button
+            disabled={(invalid && !dirtySinceLastSubmit) || pristine}
+            loading={submitting}
+            content="Register"
+            fluid
+            color="teal"
+          />
+        </Form>
+      )}
+    />
+  );
 };
 
 export default RegisterForm;

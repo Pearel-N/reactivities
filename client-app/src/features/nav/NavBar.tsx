@@ -16,15 +16,15 @@ const NavBar: React.FC = () => {
             alt="logo"
             style={{ marginRight: "10px" }}
           />
-          Reactivities
+          SAM
         </Menu.Item>
-        <Menu.Item name="Activities" as={NavLink} to="/activities" />
+        <Menu.Item name="Events" as={NavLink} to="/activities" />
         <Menu.Item>
           <Button
             as={NavLink}
             to="/createactivity"
             positive
-            content="CreateActivity"
+            content="Create Event"
           />
         </Menu.Item>
         {user && (

@@ -15,7 +15,7 @@ interface DetailParams {
 
 const ActivityDetails: React.FC<RouteComponentProps<DetailParams>> = ({
   match,
-  history
+  history,
 }) => {
   const rootStore = useContext(RootStoreContext);
   const { activity, loadActivity, loadingInitial } = rootStore.activityStore;
@@ -37,7 +37,10 @@ const ActivityDetails: React.FC<RouteComponentProps<DetailParams>> = ({
         <ActivityDetailedChat />
       </Grid.Column>
       <Grid.Column width={6}>
-        <ActivityDetailedSidebar attendees={activity.attendees} />
+        <ActivityDetailedSidebar
+          attendees={activity.attendees}
+          isHost={activity.isHost}
+        />
       </Grid.Column>
     </Grid>
   );
